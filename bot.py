@@ -65,6 +65,4 @@ def on_info(message):
 def echo_all(message):
     bot.reply_to(message, message.text)
  
-
-
 bot.polling()
