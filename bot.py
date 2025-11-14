@@ -2,6 +2,7 @@ import telebot
 from logic import gen_pass
 from logic import flip_coin
 from config import TOKEN
+import os
     
 # Замени 'TOKEN' на токен твоего бота
 # Этот токен ты получаешь от BotFather, чтобы бот мог работать
