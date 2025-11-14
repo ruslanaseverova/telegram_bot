@@ -1,12 +1,16 @@
+import requests
 import telebot
+import os
+import random
 from logic import gen_pass
 from logic import flip_coin
 from config import TOKEN
-import os
     
 # Замени 'TOKEN' на токен твоего бота
 # Этот токен ты получаешь от BotFather, чтобы бот мог работать
 bot = telebot.TeleBot(TOKEN)
+memes = os.listdir("./image")
+animals = os.listdir("./animals")
 
 text_messages = {
     'welcome':
@@ -22,6 +26,29 @@ text_messages = {
         u'Привет Привет Привет Привет Привет Привет Привет Привет Привет Привет Привет'   
 }
 
+def get_duck_image_url():    
+        url = 'https://random-d.uk/api/random'
+        res = requests.get(url)
+        data = res.json()
+        return data['url']
+
+@bot.message_handler(commands=['duck'])
+def duck(message):
+        '''По команде duck вызывает функцию get_duck_image_url и отправляет URL изображения утки'''
+        image_url = get_duck_image_url()
+        bot.reply_to(message, image_url)
+
+@bot.message_handler(commands=['animals'])
+def animals(message):
+    words = message.text.split()
+    if len(words) == 2:
+        if int(words[1]) <= len(animals):
+            with open(f"./animals/{animals[int(words[1]) - 1]}", "rb") as f:
+                bot.send_photo(message.chat.id, f)
+                return
+    with open(f"./animals/{random.choice (animals)}", "rb") as f:
+        bot.send_photo(message.chat.id, f)
+        
 @bot.message_handler(commands=['pass'])
 def random_password(message):
     words = message.text.split()
@@ -43,6 +70,17 @@ def send_coin(message):
 @bot.message_handler(commands=['hi'])
 def send_bye(message):
     bot.reply_to(message,text_messages ['hi'])    
+
+@bot.message_handler(commands=['meme'])
+def send_meme(message):
+    words = message.text.split()
+    if len(words) == 2:
+        if int(words[1]) <= len(memes):
+            with open(f"./image/{memes[int(words[1]) - 1]}", "rb") as f:
+                bot.send_photo(message.chat.id, f)
+                return
+    with open(f"./image/{random.choice (memes)}", "rb") as f:
+        bot.send_photo(message.chat.id, f)
 
 @bot.message_handler(commands=['hello'])
 def send_hello(message):
@@ -66,4 +104,5 @@ def on_info(message):
 def echo_all(message):
     bot.reply_to(message, message.text)
  
+
 bot.polling()
