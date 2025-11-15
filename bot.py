@@ -10,7 +10,7 @@ from config import TOKEN
 # Этот токен ты получаешь от BotFather, чтобы бот мог работать
 bot = telebot.TeleBot(TOKEN)
 memes = os.listdir("./image")
-animals = os.listdir("./animals")
+
 
 text_messages = {
     'welcome':
@@ -32,6 +32,12 @@ def get_duck_image_url():
         data = res.json()
         return data['url']
 
+def get_tokio_image_url():    
+        url = 'https://kitsu.io/api/edge/anime?filter[text]=tokio'
+        res = requests.get(url)  # Отправка GET-запроса по указанному URL
+        data = res.json()        # Преобразование ответа в формат JSON (словарь)
+        return data['large']     # Возврат значения по ключу 'large'
+
 @bot.message_handler(commands=['duck'])
 def duck(message):
         '''По команде duck вызывает функцию get_duck_image_url и отправляет URL изображения утки'''
@@ -39,15 +45,9 @@ def duck(message):
         bot.reply_to(message, image_url)
 
 @bot.message_handler(commands=['animals'])
-def animals(message):
-    words = message.text.split()
-    if len(words) == 2:
-        if int(words[1]) <= len(animals):
-            with open(f"./animals/{animals[int(words[1]) - 1]}", "rb") as f:
-                bot.send_photo(message.chat.id, f)
-                return
-    with open(f"./animals/{random.choice (animals)}", "rb") as f:
-        bot.send_photo(message.chat.id, f)
+def animal(message):
+        image_url = get_tokio_image_url()
+        bot.reply_to(message, image_url)
         
 @bot.message_handler(commands=['pass'])
 def random_password(message):
